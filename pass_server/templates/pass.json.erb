@@ -1,0 +1,34 @@
+{
+  "formatVersion" : 1,
+  "passTypeIdentifier" : "pass.G.Bucket10",
+  "serialNumber" : "nmyuxofgnb",
+  "teamIdentifier" : "5Q7PH7P9QA",
+  "webServiceURL" : "https://example.com/passes/",
+  "authenticationToken" : "vxwxd7J8AlNNFPS8k0a0FfUFtq0ewzFdc",
+  "relevantDate" : "2011-12-08T13:00-08:00",
+  "barcode" : {
+    <%#"message" : "120982285155171717001",%>
+    "message" : "<%= ticket_number %>",
+    "format" : "PKBarcodeFormatQR",
+    "messageEncoding" : "iso-8859-1"
+  },
+  "organizationName" : "Apple Inc.",
+  "foregroundColor" : "rgb(255, 255, 255)",
+  "eventTicket" : {
+    "primaryFields" : [
+      {
+        "key" : "event",
+        "label" : "EVENT",
+        "value" : "[EVENT_NAME]"
+      }
+    ],
+	"secondaryFields" : [
+      {
+        "key" : "loc",
+        "label" : "EVENT TIME & LOCATION",
+        "value" : "[TIME_LOCATION]"
+      }
+      
+    ]
+  }
+}

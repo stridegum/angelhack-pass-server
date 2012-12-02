@@ -66,6 +66,11 @@ class PassServer < Sinatra::Base
   end
   
   
+  #For debugging
+  get '/hello' do
+    "Hello World"
+  end
+
   # Registration
   # register a device to receive push notifications for a pass
   #
@@ -232,8 +237,22 @@ class PassServer < Sinatra::Base
       status 401
     end
   end
-  
-  
+
+
+  # Create new pass
+  #
+  #post '/v1/passes/:ticket_number' do
+  get '/v1/passes/:ticket_number' do
+    puts "Handling pass creation request..."
+    template = ERB.new get_template()
+    b = get_binding params[:ticket_number]
+    body = template.result b
+    status 200
+    body
+
+  end
+
+
   # Logging/Debugging from the device
   #
   # log an error or unexpected server behavior, to help with server debugging
@@ -291,7 +310,17 @@ class PassServer < Sinatra::Base
   
 
   private
+
+  def get_binding(ticket_number)
+    return binding
+  end
   
+  def get_template
+    template_path = File.absolute_path(File.dirname(File.expand_path(__FILE__)) + "/templates/pass.json.erb")
+    template = File.read(template_path)
+    return template
+  end
+
   def get_certificate_path
     cert_directory = File.absolute_path(File.dirname(File.expand_path(__FILE__)) + "/Data/Certificate")
     certs = Dir.glob("#{cert_directory}/*.p12")
@@ -301,6 +330,7 @@ class PassServer < Sinatra::Base
         Process.exit
     else
         certificate_path = certs[0]
+        return certificate_path
     end
   end
 
@@ -322,18 +352,6 @@ class PassServer < Sinatra::Base
     end
   end
 end
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
