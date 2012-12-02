@@ -51,6 +51,7 @@ require 'yaml'
 require 'json'
 require 'socket'
 require 'sign_pass'
+require 'uuid'
 
 class PassServer < Sinatra::Base
   attr_accessor :certificate_password
@@ -242,14 +243,14 @@ class PassServer < Sinatra::Base
   # Create new pass
   #
   #post '/v1/passes/:ticket_number' do
-  get '/v1/passes/:ticket_number' do
+  get '/v1/passes/:ticket_number/:event_name/:time_location' do
     puts "Handling pass creation request..."
     template = ERB.new get_template()
-    b = get_binding params[:ticket_number]
+    b = get_binding params[:ticket_number], params[:event_name], params[:time_location]
     body = template.result b
     status 200
-    body
-
+    temp_dir_path = copy_pass_assets body
+    temp_dir_path
   end
 
 
@@ -311,12 +312,31 @@ class PassServer < Sinatra::Base
 
   private
 
-  def get_binding(ticket_number)
+  PASS_TEMP_DIR = "/tmp/pkpass"
+  def copy_pass_assets(body)
+    id = UUID.new.generate
+    temp_asset_path = File.absolute_path(PASS_TEMP_DIR + "/" + id)
+    FileUtils.mkdir_p(temp_asset_path)
+    src_dir = get_template_dir
+    %w(background.png background@2x.png logo.png logo@2x.png).each do |file|
+      src_path = File.absolute_path(src_dir + "/" + file)
+      FileUtils.cp(src_path, temp_asset_path)
+    end
+    json_file_path = File.absolute_path(temp_asset_path + "/pass.json")
+    File.open(json_file_path, 'w') { |file| file.write(body) }
+    return temp_asset_path
+  end
+
+  def get_binding(ticket_number, event_name, time_location)
     return binding
   end
   
+  def get_template_dir
+    File.absolute_path(File.dirname(File.expand_path(__FILE__)) + "/templates")
+  end
+
   def get_template
-    template_path = File.absolute_path(File.dirname(File.expand_path(__FILE__)) + "/templates/pass.json.erb")
+    template_path = File.absolute_path(get_template_dir() + "/pass.json.erb")
     template = File.read(template_path)
     return template
   end
