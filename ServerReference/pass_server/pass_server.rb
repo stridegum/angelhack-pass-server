@@ -253,7 +253,7 @@ class PassServer < Sinatra::Base
     status 200
     pass_id = copy_pass_assets body
     make_pkpass pass_id
-    return get_pass_path pass_id
+    return get_pass_url request, pass_id
   end
 
 
@@ -327,6 +327,10 @@ class PassServer < Sinatra::Base
 
   def get_pass_path (id)
     File.absolute_path(File.dirname(File.expand_path(__FILE__)) + "/public/" + id + '/bucket.pkpass')
+  end
+
+  def get_pass_url (request, id)
+    'http://' + request.host_with_port + '/' + id + '/bucket.pkpass'
   end
 
   def copy_pass_assets(body)
