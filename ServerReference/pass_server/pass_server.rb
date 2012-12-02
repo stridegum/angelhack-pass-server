@@ -52,6 +52,7 @@ require 'json'
 require 'socket'
 require 'sign_pass'
 require 'uuid'
+require 'sign_pass'
 
 class PassServer < Sinatra::Base
   attr_accessor :certificate_password
@@ -251,7 +252,8 @@ class PassServer < Sinatra::Base
     body = template.result b
     status 200
     pass_id = copy_pass_assets body
-    pass_id
+    make_pkpass pass_id
+    return get_pass_path pass_id
   end
 
 
@@ -319,9 +321,17 @@ class PassServer < Sinatra::Base
     File.absolute_path(PASS_TEMP_DIR + "/" + id)
   end
 
+  def delete_temp_asset_dir (id)
+    FileUtils.rm_rf get_temp_asset_dir(id)
+  end
+
+  def get_pass_path (id)
+    File.absolute_path(File.dirname(File.expand_path(__FILE__)) + "/public/" + id + '/bucket.pkpass')
+  end
+
   def copy_pass_assets(body)
     id = UUID.new.generate
-    temp_asset_dir = get_temp_dir id
+    temp_asset_dir = get_temp_asset_dir id
     FileUtils.mkdir_p(temp_asset_dir)
     src_dir = get_template_dir
     %w(background.png background@2x.png logo.png logo@2x.png).each do |file|
@@ -331,6 +341,20 @@ class PassServer < Sinatra::Base
     json_file_path = File.absolute_path(temp_asset_dir + "/pass.json")
     File.open(json_file_path, 'w') { |file| file.write(body) }
     return id
+  end
+
+  def make_pkpass (id)
+    pass_output_path = get_pass_path id
+    FileUtils.mkdir_p(File.dirname(pass_output_path))
+    raw_pass_path = get_temp_asset_dir id
+    puts "Certificate path: #{File.dirname(File.expand_path(__FILE__))}/data/Certificate/*.p12"
+    certificate_path = Dir.glob("#{File.dirname(File.expand_path(__FILE__))}/data/Certificate/*.p12").first
+    puts "WWDR Certificate path: #{File.dirname(File.expand_path(__FILE__))}/data/Certificate/*.pem"
+    wwdr_certificate_path = Dir.glob("#{File.dirname(File.expand_path(__FILE__))}/data/Certificate/*.pem").first
+    certificate_password = ""
+    puts "params: #{[raw_pass_path, certificate_path, certificate_password, wwdr_certificate_path, pass_output_path]}"
+    pass_signer = SignPass.new(raw_pass_path, certificate_path, certificate_password, wwdr_certificate_path, pass_output_path)
+    pass_signer.sign_pass!
   end
 
   def get_binding(ticket_number, event_name, time_location)
