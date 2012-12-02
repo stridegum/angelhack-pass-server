@@ -338,7 +338,7 @@ class PassServer < Sinatra::Base
     temp_asset_dir = get_temp_asset_dir id
     FileUtils.mkdir_p(temp_asset_dir)
     src_dir = get_template_dir
-    %w(background.png background@2x.png logo.png logo@2x.png).each do |file|
+    %w(background.png background@2x.png logo.png logo@2x.png icon.png icon@2x.png).each do |file|
       src_path = File.absolute_path(src_dir + "/" + file)
       FileUtils.cp(src_path, temp_asset_dir)
     end
