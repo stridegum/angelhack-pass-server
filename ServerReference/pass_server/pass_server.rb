@@ -66,6 +66,7 @@ class PassServer < Sinatra::Base
     @registrations ||= DB[:registrations]
   end
   
+  set :public_folder, 'public'
   
   #For debugging
   get '/hello' do
@@ -249,8 +250,8 @@ class PassServer < Sinatra::Base
     b = get_binding params[:ticket_number], params[:event_name], params[:time_location]
     body = template.result b
     status 200
-    temp_dir_path = copy_pass_assets body
-    temp_dir_path
+    pass_id = copy_pass_assets body
+    pass_id
   end
 
 
@@ -313,18 +314,23 @@ class PassServer < Sinatra::Base
   private
 
   PASS_TEMP_DIR = "/tmp/pkpass"
+
+  def get_temp_asset_dir (id)
+    File.absolute_path(PASS_TEMP_DIR + "/" + id)
+  end
+
   def copy_pass_assets(body)
     id = UUID.new.generate
-    temp_asset_path = File.absolute_path(PASS_TEMP_DIR + "/" + id)
-    FileUtils.mkdir_p(temp_asset_path)
+    temp_asset_dir = get_temp_dir id
+    FileUtils.mkdir_p(temp_asset_dir)
     src_dir = get_template_dir
     %w(background.png background@2x.png logo.png logo@2x.png).each do |file|
       src_path = File.absolute_path(src_dir + "/" + file)
-      FileUtils.cp(src_path, temp_asset_path)
+      FileUtils.cp(src_path, temp_asset_dir)
     end
-    json_file_path = File.absolute_path(temp_asset_path + "/pass.json")
+    json_file_path = File.absolute_path(temp_asset_dir + "/pass.json")
     File.open(json_file_path, 'w') { |file| file.write(body) }
-    return temp_asset_path
+    return id
   end
 
   def get_binding(ticket_number, event_name, time_location)
