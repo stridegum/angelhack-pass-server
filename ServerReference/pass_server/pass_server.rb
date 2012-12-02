@@ -245,7 +245,7 @@ class PassServer < Sinatra::Base
   # Create new pass
   #
   #post '/v1/passes/:ticket_number' do
-  get '/v1/passes/:ticket_number/:event_name/:time_location' do
+  post '/v1/passes/' do
     puts "Handling pass creation request..."
     template = ERB.new get_template()
     b = get_binding params[:ticket_number], params[:event_name], params[:time_location]
