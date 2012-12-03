@@ -9,8 +9,10 @@ so you can use Passbook with no effort on your part.
 This particular piece is a server based on Apple's provided code for Passbook servers.  We modified and extended it to support our use case.
 
 Part 1 is the iOS app: https://github.com/braddgriffith/willie-mayes-hayes
+
 Part 2 is the Rails/IMAP server:
 
 All code is extremely hacky, written in 24 hours with no sleep and way too much caffeine.
+
 Team: @jagill, @rissem, @braddgriffith, Kevin Gibbon
 
