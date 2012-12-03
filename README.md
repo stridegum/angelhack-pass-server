@@ -5,7 +5,8 @@ This is one part of our AngelHack 2012 project.  The project as a whole is an iO
 It scans your email for tickets, parses and pdf tickets, constructs a passbook entry, and pushes it to your iOS device --
 so you can use Passbook with no effort on your part.
 
-This server is based on Apple's provided code for passbook servers.  We modified and extended it to support our use case.
+### Part 3
+This particular piece is a server based on Apple's provided code for Passbook servers.  We modified and extended it to support our use case.
 
 Part 1 is the iOS app: https://github.com/braddgriffith/willie-mayes-hayes
 Part 2 is the Rails/IMAP server:
