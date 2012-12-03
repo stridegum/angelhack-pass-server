@@ -10,9 +10,9 @@ This particular piece is a server based on Apple's provided code for Passbook se
 
 Part 1 is the iOS app: https://github.com/braddgriffith/willie-mayes-hayes
 
-Part 2 is the Rails/IMAP server:
+Part 2 is the Rails/IMAP server: https://github.com/rissem/gmail-passbook
 
 All code is extremely hacky, written in 24 hours with no sleep and way too much caffeine.
 
-Team: @jagill, @rissem, @braddgriffith, Kevin Gibbon
+Team: @jagill, @rissem, @braddgriffith, @kevingibbon
 
